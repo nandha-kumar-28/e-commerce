@@ -51,9 +51,7 @@ const dashboard = () => {
       .get("/api/product", {})
       .then((res) => {
         setLoader(false);
-        console.log("res", res);
         setDatalist(res?.data?.data);
-        // setsaveClicked(false);
       })
       .catch((error) => {
         setLoader(false);
@@ -76,7 +74,6 @@ const dashboard = () => {
     axios
       .post("/api/product", { ...values })
       .then((res) => {
-        console.log("res", res);
         setIsVisible(false);
         setLoader(false);
         router.push("/dashboard");
@@ -84,7 +81,6 @@ const dashboard = () => {
       .catch((error) => {
         setLoader(false);
         setIsVisible(false);
-        console.log("error", error);
         notification.open({
           message: error?.response?.data?.errorTitle,
           description: error?.response?.data?.errordescription,
@@ -104,8 +100,6 @@ const dashboard = () => {
     axios
       .post("/api/productedit", { ...data })
       .then((res) => {
-        console.log("res", res?.data?.data);
-
         const dataList = {
           productName: res?.data?.data.productName,
           productCode: res?.data?.data.productCode,
@@ -116,7 +110,6 @@ const dashboard = () => {
         form.setFieldsValue(dataList);
       })
       .catch((error) => {
-        console.log("error", error);
         notification.open({
           message: error?.response?.data?.errorTitle,
           description: error?.response?.data?.errordescription,
@@ -166,7 +159,6 @@ const dashboard = () => {
     //   ),
     // },
   ];
-  console.log("datalist", datalist);
   const handleCliked = () => {
     setIsVisible(true);
   };

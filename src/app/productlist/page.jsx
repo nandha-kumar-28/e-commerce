@@ -19,14 +19,11 @@ const productlist = () => {
     axios
       .get("/api/product", {})
       .then((res) => {
-        console.log("res", res);
         setEditData(res?.data?.data);
         setLoader(false);
       })
       .catch((err) => {
-        console.log("error", err);
         setLoader(false);
-        // errorMessage(err?.response?.data?.error);
       });
   };
 

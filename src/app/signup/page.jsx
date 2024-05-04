@@ -20,7 +20,7 @@ const signup = () => {
 
   const onFinish = async (values) => {
     setLoader(true);
-    console.log("Success:", values);
+
     try {
       const response = await axios.post("/api/signup", values);
       router.push("/login");

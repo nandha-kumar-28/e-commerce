@@ -29,11 +29,9 @@ const Login = () => {
   const [loader, setLoader] = useState(false);
   const onFinish = async (values) => {
     setLoader(true);
-    console.log("Success:", values);
     try {
       // setLoading(true);
       const response = await axios.post("/api/login", values);
-      console.log(response);
       if (response?.data?.isAdmin) {
         setLoader(false);
         router.push("/dashboard");

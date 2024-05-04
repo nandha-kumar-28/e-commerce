@@ -32,19 +32,6 @@ export async function POST(request) {
     //   );
     // }
 
-    // //hash password using bcryptjs.
-    // const salt = await bcryptjs.genSalt(10);
-    // const hashedPassword = await bcryptjs.hash(password, salt);
-
-    // const newUser = new User({
-    //   username,
-    //   email,
-    //   password: hashedPassword,
-    //   isAdmin,
-    // });
-
-    // // Saves the new user to the database.
-    // const savedUser = await newUser.save();
     const response = NextResponse.json({
       message: "Purchase successful",
       success: true,

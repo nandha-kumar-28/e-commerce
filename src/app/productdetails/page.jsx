@@ -26,7 +26,6 @@ const productdetails = () => {
 
   const getProductDetails = () => {
     const id = localStorage.getItem("productCode");
-    console.log("id", id);
     const data = {
       productCode: id,
     };
@@ -34,17 +33,13 @@ const productdetails = () => {
       .post("/api/productedit", { ...data })
       .then((res) => {
         setLoader(false);
-        console.log("res", res?.data?.data);
         setproductDetails(res?.data?.data);
       })
       .catch((err) => {
         console.log("error", err);
-        // setsaveClicked(false);
-        // errorMessage(err?.response?.data?.error);
       });
   };
   const onFinish = (values) => {
-    console.log("Success:", values);
     const submitData = {
       emailId: values.emailId,
       productName: productDetails.productName,
@@ -53,25 +48,18 @@ const productdetails = () => {
       address1: values.address1,
       landmark: values.landmark,
     };
-    console.log("Success:", submitData);
     axios
       .post("/api/purchase", { ...submitData })
       .then((res) => {
-        console.log("res", res);
         setbuyVisible(false);
         setPurchaseStatus(true);
       })
       .catch((error) => {
         setbuyVisible(false);
-        // setLoader(false);
-        // setIsVisible(false);
-        console.log("error", error);
         notification.open({
           message: error?.response?.data?.errorTitle,
           description: error?.response?.data?.errordescription,
         });
-        // setsaveClicked(false);
-        // errorMessage(err?.response?.data?.error);
       });
   };
   const onFinishFailed = (errorInfo) => {
