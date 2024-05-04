@@ -1,20 +1,37 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect } from "react";
-import { Button, Checkbox, Form, Input, Row, Col, Card, Modal } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Row,
+  Col,
+  Card,
+  notification,
+} from "antd";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
 const signup = () => {
   const router = useRouter();
+  const [loader, setLoader] = useState(false);
 
   const onFinish = async (values) => {
+    setLoader(true);
     console.log("Success:", values);
     try {
       const response = await axios.post("/api/signup", values);
       router.push("/login");
+      setLoader(false);
     } catch (error) {
-      console.log("Signup failed", error.message);
+      notification.open({
+        message: error?.response?.data?.errorTitle,
+        description: error?.response?.data?.errordescription,
+      });
+      setLoader(false);
+      console.log("Signup failed", error);
     }
   };
   const onFinishFailed = (errorInfo) => {
@@ -112,6 +129,7 @@ const signup = () => {
                 <Button type="primary" htmlType="submit">
                   Sign Up
                 </Button>
+                {""} Or <Link href={"/login"}>Already Existing User </Link>
               </Form.Item>
             </Form>
           </Card>

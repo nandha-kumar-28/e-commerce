@@ -1,6 +1,17 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Checkbox, Form, Input, Row, Col, Card, Modal } from "antd";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Row,
+  Col,
+  Card,
+  Modal,
+  Spin,
+  notification,
+} from "antd";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
@@ -15,15 +26,28 @@ const layout = {
 
 const Login = () => {
   const router = useRouter();
+  const [loader, setLoader] = useState(false);
   const onFinish = async (values) => {
+    setLoader(true);
     console.log("Success:", values);
     try {
       // setLoading(true);
       const response = await axios.post("/api/login", values);
       console.log(response);
-      router.push("/dashboard");
+      if (response?.data?.isAdmin) {
+        setLoader(false);
+        router.push("/dashboard");
+      } else {
+        setLoader(false);
+        router.push("/productlist");
+      }
     } catch (error) {
-      console.log("Login failed", error.message);
+      console.log("Login failed", error);
+      notification.open({
+        message: error?.response?.data?.errorTitle,
+        description: error?.response?.data?.errordescription,
+      });
+      setLoader(false);
     } finally {
       // setLoading(false);
     }
@@ -108,6 +132,7 @@ const Login = () => {
           </Card>
         </Col>
       </Row>
+      <Spin spinning={loader} fullscreen />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Space, Table, Card, Button } from "antd";
+import { Space, Table, Card, Button, Spin } from "antd";
 import { message } from "antd";
 import { PlusCircleOutlined, DownCircleOutlined } from "@ant-design/icons";
 import { CSVLink } from "react-csv";
@@ -9,6 +9,7 @@ import axios from "axios";
 const productlist = () => {
   const router = useRouter();
   const [editData, setEditData] = useState([]);
+  const [loader, setLoader] = useState(true);
 
   useEffect(() => {
     getProductDetails();
@@ -20,31 +21,18 @@ const productlist = () => {
       .then((res) => {
         console.log("res", res);
         setEditData(res?.data?.data);
-        // setsaveClicked(false);
+        setLoader(false);
       })
       .catch((err) => {
         console.log("error", err);
-        // setsaveClicked(false);
+        setLoader(false);
         // errorMessage(err?.response?.data?.error);
       });
   };
 
   const handleEdit = (id) => {
-    setIsVisible(true);
-    const data = {
-      productCode: id,
-    };
-    axios
-      .post("/api/productedit", { ...data })
-      .then((res) => {
-        console.log("res", res?.data?.data);
-        setEditData(res?.data?.data);
-      })
-      .catch((err) => {
-        console.log("error", err);
-        // setsaveClicked(false);
-        // errorMessage(err?.response?.data?.error);
-      });
+    localStorage.setItem("productCode", id);
+    router.push("/productdetails");
   };
   const columns = [
     {
@@ -73,8 +61,7 @@ const productlist = () => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <a onClick={() => handleEdit(record.productCode)}>Edit {record.id}</a>
-          <a>Delete</a>
+          <Button onClick={() => handleEdit(record.productCode)}>View</Button>
         </Space>
       ),
     },
@@ -101,18 +88,19 @@ const productlist = () => {
                 message.success("The file is downloading");
               }}
             >
-              <DownCircleOutlined style={{ fontSize: 28, marginRight: 20 }} />
+              <Button>
+                {" "}
+                <DownCircleOutlined />
+                Download List
+              </Button>
             </CSVLink>
-            <PlusCircleOutlined
-              style={{ fontSize: 28 }}
-              onClick={() => handleCliked()}
-            />
           </>
         }
         style={{ margin: 60 }}
       >
         <Table columns={columns} dataSource={editData} />
       </Card>
+      <Spin spinning={loader} fullscreen />
     </div>
   );
 };

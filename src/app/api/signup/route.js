@@ -19,7 +19,10 @@ export async function POST(request) {
     //If yes, returns a 400 response.
     if (user) {
       return NextResponse.json(
-        { error: "User already exists" },
+        {
+          errorTitle: "User already exists",
+          errordescription: "Please try with another login credentials",
+        },
         { status: 400 }
       );
     }
@@ -44,6 +47,9 @@ export async function POST(request) {
       savedUser,
     });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { errorTitle: error.message, errordescription: error.message },
+      { status: 500 }
+    );
   }
 }

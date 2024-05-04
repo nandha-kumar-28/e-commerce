@@ -1,7 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Space, Table, Tag, Card, Modal, Input, Form, Button } from "antd";
-import { message, Upload } from "antd";
+import {
+  Space,
+  Table,
+  Tag,
+  Card,
+  Modal,
+  Input,
+  Form,
+  Button,
+  Spin,
+} from "antd";
+import { message, Upload, notification } from "antd";
 import { PlusCircleOutlined, DownCircleOutlined } from "@ant-design/icons";
 import { CSVLink } from "react-csv";
 import { useRouter } from "next/navigation";
@@ -29,37 +39,56 @@ const dashboard = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [datalist, setDatalist] = useState([]);
   const [editData, setEditData] = useState([]);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     getProductDetails();
   }, []);
 
   const getProductDetails = () => {
+    setLoader(true);
     axios
       .get("/api/product", {})
       .then((res) => {
+        setLoader(false);
         console.log("res", res);
         setDatalist(res?.data?.data);
         // setsaveClicked(false);
       })
-      .catch((err) => {
-        console.log("error", err);
-        // setsaveClicked(false);
-        // errorMessage(err?.response?.data?.error);
+      .catch((error) => {
+        setLoader(false);
+        notification.open({
+          message: error?.response?.data?.errorTitle,
+          description: error?.response?.data?.errordescription,
+        });
       });
   };
   const onFinish = (values) => {
-    console.log("Success:", values);
-
+    setLoader(true);
+    const submitPayload = {
+      productCode: values.productCode,
+      productName: values.productName,
+      quantity: parseInt(values.quantity),
+      productDescription: values.producDescription,
+      purchaseCount: 0,
+      inStack: parseInt(values.quantity),
+    };
     axios
       .post("/api/product", { ...values })
       .then((res) => {
         console.log("res", res);
-        // setsaveClicked(false);
+        setIsVisible(false);
+        setLoader(false);
         router.push("/dashboard");
       })
-      .catch((err) => {
-        console.log("error", err);
+      .catch((error) => {
+        setLoader(false);
+        setIsVisible(false);
+        console.log("error", error);
+        notification.open({
+          message: error?.response?.data?.errorTitle,
+          description: error?.response?.data?.errordescription,
+        });
         // setsaveClicked(false);
         // errorMessage(err?.response?.data?.error);
       });
@@ -76,12 +105,22 @@ const dashboard = () => {
       .post("/api/productedit", { ...data })
       .then((res) => {
         console.log("res", res?.data?.data);
-        setEditData(res?.data?.data);
+
+        const dataList = {
+          productName: res?.data?.data.productName,
+          productCode: res?.data?.data.productCode,
+          quantity: res?.data?.data.quantity,
+          producDescription: res?.data?.data.producDescription,
+        };
+        setEditData(dataList);
+        form.setFieldsValue(dataList);
       })
-      .catch((err) => {
-        console.log("error", err);
-        // setsaveClicked(false);
-        // errorMessage(err?.response?.data?.error);
+      .catch((error) => {
+        console.log("error", error);
+        notification.open({
+          message: error?.response?.data?.errorTitle,
+          description: error?.response?.data?.errordescription,
+        });
       });
   };
   const columns = [
@@ -107,15 +146,25 @@ const dashboard = () => {
       key: "productDescription",
     },
     {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Space size="middle">
-          <a onClick={() => handleEdit(record.productCode)}>Edit {record.id}</a>
-          <a>Delete</a>
-        </Space>
-      ),
+      title: "In- Stack",
+      dataIndex: "inStack",
+      key: "inStack",
     },
+    {
+      title: "Purchase Count",
+      dataIndex: "purchaseCount",
+      key: "purchaseCount",
+    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_, record) => (
+    //     <Space size="middle">
+    //       <a onClick={() => handleEdit(record.productCode)}>Edit {record.id}</a>
+    //       <a>Delete</a>
+    //     </Space>
+    //   ),
+    // },
   ];
   console.log("datalist", datalist);
   const handleCliked = () => {
@@ -149,12 +198,19 @@ const dashboard = () => {
                 message.success("The file is downloading");
               }}
             >
-              <DownCircleOutlined style={{ fontSize: 28, marginRight: 20 }} />
+              <Button type="primary" ghost>
+                <DownCircleOutlined />
+                Report
+              </Button>
             </CSVLink>
-            <PlusCircleOutlined
-              style={{ fontSize: 28 }}
+            <Button
+              type="primary"
+              style={{ marginLeft: 20 }}
               onClick={() => handleCliked()}
-            />
+            >
+              <PlusCircleOutlined />
+              Add Product
+            </Button>
           </>
         }
         style={{ margin: 60 }}
@@ -179,12 +235,6 @@ const dashboard = () => {
           style={{
             maxWidth: 600,
             margin: 10,
-          }}
-          initialValues={{
-            productName: editData.productName,
-            productCode: editData.productCode,
-            quantity: editData.quantity,
-            productDescription: editData.productDescription,
           }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
@@ -266,6 +316,7 @@ const dashboard = () => {
           </Form.Item>
         </Form>
       </Modal>
+      <Spin spinning={loader} fullscreen />
     </div>
   );
 };
