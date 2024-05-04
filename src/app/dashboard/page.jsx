@@ -71,7 +71,6 @@ const dashboard = () => {
       purchaseCount: 0,
       inStack: parseInt(values.quantity),
     };
-    console.log("submit", submitPayload);
     axios
       .post("/api/product", { ...submitPayload })
       .then((res) => {
@@ -84,7 +83,6 @@ const dashboard = () => {
         window.location.reload();
       })
       .catch((error) => {
-        console.log("sjhdjshdsdd", error);
         setLoader(false);
         setIsVisible(false);
         notification.open({
