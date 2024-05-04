@@ -67,18 +67,24 @@ const dashboard = () => {
       productCode: values.productCode,
       productName: values.productName,
       quantity: parseInt(values.quantity),
-      productDescription: values.producDescription,
+      productDescription: values.productDescription,
       purchaseCount: 0,
       inStack: parseInt(values.quantity),
     };
+    console.log("submit", submitPayload);
     axios
-      .post("/api/product", { ...values })
+      .post("/api/product", { ...submitPayload })
       .then((res) => {
         setIsVisible(false);
         setLoader(false);
-        router.push("/dashboard");
+        notification.open({
+          message: "Success",
+          description: res?.data?.message,
+        });
+        window.location.reload();
       })
       .catch((error) => {
+        console.log("sjhdjshdsdd", error);
         setLoader(false);
         setIsVisible(false);
         notification.open({

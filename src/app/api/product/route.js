@@ -9,7 +9,14 @@ export async function POST(request) {
   // Defines an asynchronous POST request handler.
   try {
     const reqBody = await request.json();
-    const { productName, productCode, quantity, productDescription } = reqBody;
+    const {
+      productName,
+      productCode,
+      quantity,
+      productDescription,
+      inStack,
+      purchaseCount,
+    } = reqBody;
     const product = await Product.findOne({ productCode });
 
     //If yes, returns a 400 response.
@@ -28,6 +35,8 @@ export async function POST(request) {
       productCode,
       quantity,
       productDescription,
+      inStack,
+      purchaseCount,
     });
 
     // Saves the new prduct to the database.

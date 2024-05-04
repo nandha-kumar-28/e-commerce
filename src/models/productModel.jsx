@@ -26,7 +26,7 @@ const productSchema = new mongoose.Schema({
     required: [true, "Please provide purchase Count"],
     unique: false,
   },
-  inCount: {
+  inStack: {
     type: Number,
     required: [true, "Please provide In - Stack"],
     unique: false,
